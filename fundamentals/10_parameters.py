@@ -21,6 +21,12 @@ RULES OF THUMB
   - Brainstorming / copywriting / variety      -> temperature 0.7-1.0.
   - Always set max_tokens in production to bound cost & latency.
 
+PROVIDER NOTE
+  - temperature range is 0-2 on OpenAI but 0-1 on Claude; `common.chat` clamps
+    for you, so the calls below behave on either stack.
+  - `seed` is an OpenAI feature (reproducible sampling); Claude has no seed. The
+    runnable calls here use only temperature + max_tokens, so they work on both.
+
 Run:  python fundamentals/10_parameters.py
 """
 
