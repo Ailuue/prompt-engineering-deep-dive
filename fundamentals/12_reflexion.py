@@ -62,6 +62,7 @@ def verify(sentence: str) -> tuple[bool, str]:
 
 def reflexion(max_attempts: int = 4) -> str:
     history = ""
+    candidate = ""
     for attempt in range(1, max_attempts + 1):
         prompt = f"Task:\n{TASK}\n"
         if history:
