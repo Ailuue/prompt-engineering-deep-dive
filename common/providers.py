@@ -86,7 +86,9 @@ def ensure_ready() -> None:
     """
     p = provider_name()
     if p not in _KEYS:
-        sys.exit(f"PROVIDER={p!r} is not recognized. Set PROVIDER=openai or claude in .env.")
+        sys.exit(
+            f"PROVIDER={p!r} is not recognized. Set PROVIDER=openai or claude in .env."
+        )
     missing = [k for k in required_keys() if not os.getenv(k)]
     if missing:
         sys.exit(
@@ -100,7 +102,10 @@ def _openai_client():
     from openai import OpenAI
 
     # base_url lets PROVIDER=openai also reach a local OpenAI-compatible server.
-    return OpenAI(api_key=os.getenv("OPENAI_API_KEY"), base_url=os.getenv("OPENAI_BASE_URL") or None)
+    return OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        base_url=os.getenv("OPENAI_BASE_URL") or None,
+    )
 
 
 @lru_cache(maxsize=1)
@@ -113,7 +118,11 @@ def _anthropic_client():
 def _split_system(messages: list[dict]) -> tuple[str, list[dict]]:
     """Claude wants the system prompt separate; pull system messages out of the list."""
     system_parts = [m["content"] for m in messages if m["role"] == "system"]
-    convo = [{"role": m["role"], "content": m["content"]} for m in messages if m["role"] != "system"]
+    convo = [
+        {"role": m["role"], "content": m["content"]}
+        for m in messages
+        if m["role"] != "system"
+    ]
     return "\n\n".join(system_parts), convo
 
 
@@ -204,7 +213,9 @@ def chat_stream(
         if system:
             params["system"] = system
         with _anthropic_client().messages.stream(
-            model=model or chat_model(), messages=convo, **params  # type: ignore[arg-type]
+            model=model or chat_model(),
+            messages=convo,  # type: ignore[arg-type]
+            **params,  # type: ignore[arg-type]
         ) as stream:
             for text in stream.text_stream:
                 yield text
@@ -253,7 +264,13 @@ def structured(
         resp = _anthropic_client().messages.create(  # type: ignore[call-overload]
             model=model or chat_model(),
             messages=convo,  # type: ignore[arg-type]
-            tools=[{"name": name, "description": f"Return the {name} as structured data.", "input_schema": schema}],
+            tools=[
+                {
+                    "name": name,
+                    "description": f"Return the {name} as structured data.",
+                    "input_schema": schema,
+                }
+            ],
             tool_choice={"type": "tool", "name": name},
             **params,
         )
