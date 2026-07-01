@@ -13,7 +13,9 @@ Run:  python examples/05_text_to_sql.py
 """
 
 # --- make the repo-root 'common' package importable when run directly ---
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import chat, header, rule
@@ -26,6 +28,7 @@ order_items(id PK, order_id FK->orders.id, product, qty, unit_cents)
 """
 
 QUESTION = "What are the top 5 countries by total completed-order revenue in 2025?"
+
 
 # --------------------------------------------------------------------------
 # BEFORE: no schema, no dialect, no constraints. The model invents table/column
@@ -78,10 +81,12 @@ if __name__ == "__main__":
     print("\nSchema:\n", SCHEMA)
     print("Question:", QUESTION)
 
-    rule(); print("\n[BEFORE - no schema, no rules] ->")
+    rule()
+    print("\n[BEFORE - no schema, no rules] ->")
     print(naive())
 
-    rule(); print("\n[AFTER - schema + dialect + safety + example + format] ->")
+    rule()
+    print("\n[AFTER - schema + dialect + safety + example + format] ->")
     print(optimized())
 
     rule()
