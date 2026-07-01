@@ -15,8 +15,9 @@ Run:  python examples/06_classification.py
 """
 
 import json
+import os
+import sys
 
-import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import chat, header, rule
@@ -38,7 +39,12 @@ LABELS = ["billing", "bug", "how_to", "complaint", "other"]
 # --------------------------------------------------------------------------
 def naive(ticket: str) -> str:
     return chat(
-        [{"role": "user", "content": f"What category is this support ticket?\n\n{ticket}"}],
+        [
+            {
+                "role": "user",
+                "content": f"What category is this support ticket?\n\n{ticket}",
+            }
+        ],
         temperature=0,
     ).strip()
 
@@ -69,8 +75,10 @@ Examples:
 
 def optimized(ticket: str) -> dict:
     raw = chat(
-        [{"role": "system", "content": SYSTEM},
-         {"role": "user", "content": f"Ticket: {ticket}"}],
+        [
+            {"role": "system", "content": SYSTEM},
+            {"role": "user", "content": f"Ticket: {ticket}"},
+        ],
         temperature=0,
         json=True,
     )
@@ -87,14 +95,20 @@ def optimized(ticket: str) -> dict:
 if __name__ == "__main__":
     header("EXAMPLE 6 - CLASSIFICATION (TICKET ROUTING)")
 
-    rule(); print("\n[BEFORE - open-ended 'what category'] ->")
+    rule()
+    print("\n[BEFORE - open-ended 'what category'] ->")
     for t in TICKETS:
         print(f"  {naive(t):<22} <- {t[:55]}")
 
-    rule(); print("\n[AFTER - closed labels + confidence + 'other' escape hatch] ->")
+    rule()
+    print("\n[AFTER - closed labels + confidence + 'other' escape hatch] ->")
     for t in TICKETS:
         result = optimized(t)
-        route = "→ human review" if result["confidence"] < 0.6 else f"→ {result['label']} team"
+        route = (
+            "→ human review"
+            if result["confidence"] < 0.6
+            else f"→ {result['label']} team"
+        )
         print(f"  {result['label']:<10} conf={result['confidence']:.2f}  {route}")
         print(f"             {t[:60]}")
 
