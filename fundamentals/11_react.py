@@ -20,11 +20,18 @@ KEY IDEAS
     the right moment — without it the model hallucinates its own observations.
   - Grounding each step in a real Observation is what stops the model from making
     up facts: it reasons over data it actually fetched, not its memory.
+  - The `tool[input]` regex only enforces the outer syntax — it does NOT validate
+    that `input` is in a format the tool understands (e.g. `lookup[height of the
+    Eiffel Tower]` parses fine but won't match the FACTS dict key below). Real
+    tool-calling systems fix this with schema-validated structured arguments
+    instead of free-text regex parsing.
 
 Run:  python fundamentals/11_react.py
 """
 
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
@@ -75,8 +82,10 @@ def react(question: str, max_steps: int = 5) -> str:
     for step in range(max_steps):
         # Stop at "Observation:" so the model can't invent the tool's result.
         reply = chat(
-            [{"role": "system", "content": SYSTEM},
-             {"role": "user", "content": transcript}],
+            [
+                {"role": "system", "content": SYSTEM},
+                {"role": "user", "content": transcript},
+            ],
             temperature=0,
             stop=["Observation:"],
         ).strip()
@@ -100,7 +109,9 @@ def react(question: str, max_steps: int = 5) -> str:
 
 if __name__ == "__main__":
     header("ReAct — REASON + ACT")
-    question = "How many meters taller is the Eiffel Tower than a 100-meter building, doubled?"
+    question = (
+        "How many meters taller is the Eiffel Tower than a 100-meter building, doubled?"
+    )
     print(f"\nQuestion: {question}\n")
     rule()
     answer = react(question)
