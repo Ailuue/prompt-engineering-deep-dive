@@ -15,7 +15,9 @@ Run:  python examples/02_data_extraction.py
 import json
 
 # --- make the repo-root 'common' package importable when run directly ---
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import chat, header, rule
@@ -25,6 +27,7 @@ We're hiring a Senior Backend Engineer (Remote, EU timezones). Comp: 80-95k EUR
 plus equity. You'll work in Python and Go on our payments platform. 5+ yrs exp.
 Nice to have: Kubernetes. Apply by 2026-07-15. Contact jobs@fintechco.eu.
 """
+
 
 # --------------------------------------------------------------------------
 # BEFORE: "extract the info" with no schema -> inconsistent keys, salary as a
@@ -68,7 +71,10 @@ Job posting:
 def optimized() -> str:
     return chat(
         [
-            {"role": "system", "content": "You are a precise extraction engine. Output only valid JSON."},
+            {
+                "role": "system",
+                "content": "You are a precise extraction engine. Output only valid JSON.",
+            },
             {"role": "user", "content": OPTIMIZED_PROMPT},
         ],
         temperature=0,
@@ -80,18 +86,22 @@ if __name__ == "__main__":
     header("EXAMPLE 2 - DATA EXTRACTION")
     print("\nSource posting:\n", JOB_POST)
 
-    rule(); print("\n[BEFORE - no schema] ->")
+    rule()
+    print("\n[BEFORE - no schema] ->")
     print(naive())
 
-    rule(); print("\n[AFTER - typed schema + normalization + null policy] ->")
+    rule()
+    print("\n[AFTER - typed schema + normalization + null policy] ->")
     raw = optimized()
     print(raw)
 
     try:
         data = json.loads(raw)
-        print(f"\nParsed OK -> salary_min={data.get('salary_min')} "
-              f"({type(data.get('salary_min')).__name__}), "
-              f"skills={data.get('skills')}")
+        print(
+            f"\nParsed OK -> salary_min={data.get('salary_min')} "
+            f"({type(data.get('salary_min')).__name__}), "
+            f"skills={data.get('skills')}"
+        )
     except json.JSONDecodeError as e:
         print("Parse error:", e)
 
