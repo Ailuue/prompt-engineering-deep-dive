@@ -31,7 +31,9 @@ Run:  python fundamentals/10_parameters.py
 """
 
 # --- make the repo-root 'common' package importable when run directly ---
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import chat, header, rule
@@ -41,7 +43,11 @@ PROMPT = "Give me a name for a cozy neighborhood coffee shop. Reply with just th
 
 def sample_at(temperature: float, n: int = 3) -> list[str]:
     return [
-        chat([{"role": "user", "content": PROMPT}], temperature=temperature, max_tokens=20).strip()
+        chat(
+            [{"role": "user", "content": PROMPT}],
+            temperature=temperature,
+            max_tokens=20,
+        ).strip()
         for _ in range(n)
     ]
 
