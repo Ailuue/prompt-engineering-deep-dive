@@ -26,10 +26,12 @@ Run:  python fundamentals/06_structured_output.py
 import json
 
 # --- make the repo-root 'common' package importable when run directly ---
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common import chat, structured, header, rule
+from common import chat, header, rule, structured
 
 EMAIL = (
     "Hi, this is Dana Lopez. We'd like 250 units of the X200 sensor shipped to "
@@ -56,7 +58,10 @@ def ask_for_json() -> str:
     # Level 2: force valid JSON syntax with json=True (provider-appropriate).
     return chat(
         [
-            {"role": "system", "content": "You output only valid JSON. No markdown, no prose."},
+            {
+                "role": "system",
+                "content": "You output only valid JSON. No markdown, no prose.",
+            },
             {"role": "user", "content": PROMPT},
         ],
         temperature=0,
@@ -78,8 +83,13 @@ def with_json_schema() -> str:
             "budget_eur": {"type": ["number", "null"]},
         },
         "required": [
-            "contact_name", "email", "product", "quantity",
-            "destination", "deadline", "budget_eur",
+            "contact_name",
+            "email",
+            "product",
+            "quantity",
+            "destination",
+            "deadline",
+            "budget_eur",
         ],
         "additionalProperties": False,
     }
@@ -103,8 +113,10 @@ if __name__ == "__main__":
     # Demonstrate that the output is actually usable as data.
     try:
         data = json.loads(raw)
-        print(f"\nParsed OK. quantity={data.get('quantity')} "
-              f"deadline={data.get('deadline')} budget={data.get('budget_eur')}")
+        print(
+            f"\nParsed OK. quantity={data.get('quantity')} "
+            f"deadline={data.get('deadline')} budget={data.get('budget_eur')}"
+        )
     except json.JSONDecodeError as e:
         print("Failed to parse JSON:", e)
 
@@ -113,8 +125,10 @@ if __name__ == "__main__":
     try:
         print(with_json_schema())
     except Exception as e:  # noqa: BLE001 - educational fallback
-        print(f"Schema enforcement unsupported by this endpoint ({type(e).__name__}). "
-              "Fall back to json=True.")
+        print(
+            f"Schema enforcement unsupported by this endpoint ({type(e).__name__}). "
+            "Fall back to json=True."
+        )
 
     rule()
     print(
