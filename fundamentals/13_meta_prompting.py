@@ -24,7 +24,9 @@ KEY IDEAS
 Run:  python fundamentals/13_meta_prompting.py
 """
 
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import chat, header, rule
@@ -57,7 +59,7 @@ def run_prompt(prompt_template: str, text: str) -> str:
     # Templates from the model may use {input} or literally include the text slot.
     filled = prompt_template.replace("{input}", text)
     if text not in filled:  # no placeholder -> append the input explicitly
-        filled = f"{prompt_template}\n\nText:\n\"\"\"{text}\"\"\""
+        filled = f'{prompt_template}\n\nText:\n"""{text}"""'
     return chat([{"role": "user", "content": filled}], temperature=0.3)
 
 
