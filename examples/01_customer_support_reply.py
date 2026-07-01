@@ -12,7 +12,9 @@ Run:  python examples/01_customer_support_reply.py
 """
 
 # --- make the repo-root 'common' package importable when run directly ---
-import os, sys
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from common import chat, header, rule
@@ -75,10 +77,12 @@ if __name__ == "__main__":
     header("EXAMPLE 1 - CUSTOMER SUPPORT REPLY")
     print("\nIncoming email:\n", CUSTOMER_EMAIL)
 
-    rule(); print("\n[BEFORE - naive prompt] ->")
+    rule()
+    print("\n[BEFORE - naive prompt] ->")
     print(naive())
 
-    rule(); print("\n[AFTER - role + policy + format + fallback] ->")
+    rule()
+    print("\n[AFTER - role + policy + format + fallback] ->")
     print(optimized())
 
     rule()
