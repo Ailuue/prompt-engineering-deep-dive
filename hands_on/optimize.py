@@ -12,11 +12,11 @@ idea at full scale.)
 
 Run it (uses your configured PROVIDER — makes small, real API calls):
 
-    # Compare the built-in naive vs tuned prompt on the sentiment task:
+    # Compare the built-in naive vs tuned prompt on the support-ticket priority task:
     python hands_on/optimize.py
 
-    # A different built-in task (support-ticket priority):
-    python hands_on/optimize.py --task priority
+    # A different built-in task (sentiment classification):
+    python hands_on/optimize.py --task sentiment
 
     # Show the cases each prompt got wrong:
     python hands_on/optimize.py --show-misses
@@ -66,8 +66,15 @@ class Task:
 
 
 def score(output: str, expected: str) -> bool:
-    """Tolerant exact-ish match: is the expected label a word in the output?"""
-    words = {w.strip(".,!?:;\"'()").lower() for w in output.split()}
+    """Tolerant exact-ish match: is the expected label a word in the output?
+
+    Markdown decoration (*, #, `) is stripped before matching — it's chrome,
+    not signal, and shouldn't count for or against either prompt. A compound
+    hedge like "Mixed/Negative" still fails to match "Mixed": refusing to
+    commit to one label is a real failure, not a formatting artifact.
+    """
+    cleaned = output.replace("*", " ").replace("#", " ").replace("`", " ")
+    words = {w.strip(".,!?:;\"'()").lower() for w in cleaned.split()}
     return expected.lower() in words
 
 
@@ -189,8 +196,8 @@ def load_custom(prompt_a: str, prompt_b: str, data: str) -> Task:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="A/B-compare two prompts on a labeled set.")
-    parser.add_argument("--task", choices=sorted(BUILTIN), default="sentiment",
-                        help="which built-in task to run (default: sentiment)")
+    parser.add_argument("--task", choices=sorted(BUILTIN), default="priority",
+                        help="which built-in task to run (default: priority)")
     parser.add_argument("--show-misses", action="store_true", help="print the cases each prompt got wrong")
     parser.add_argument("--prompt-a", help="a prompt file (the baseline) for a custom task")
     parser.add_argument("--prompt-b", help="a prompt file (the candidate) for a custom task")
